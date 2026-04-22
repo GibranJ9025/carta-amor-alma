@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carta para Alma Laura</title>
+
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #ffe6ec, #ffffff);
+    font-family: Georgia, serif;
+}
+
+/* CONTENEDOR CENTRADO */
+.container {
+    max-width: 90%;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+/* NOMBRE */
+h1 {
+    color: #b3003c;
+    font-size: clamp(22px, 5vw, 32px);
+    margin-bottom: 20px;
+}
+
+/* CORAZÓN */
+.heart {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    width: 90px;
+    margin: 0 auto 25px;
+}
+
+.pixel {
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.red { background: #ff3366; }
+
+/* TEXTO CENTRADO */
+#texto {
+    font-size: clamp(15px, 4vw, 18px);
+    line-height: 1.8;
+    color: #333;
+    text-align: center;
+    white-space: pre-wrap;
+    border-right: 2px solid #b3003c;
+    padding-right: 5px;
+    animation: blink 1s infinite;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* RESALTADO */
+.resaltado {
+    color: #ff3366;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+/* CANVAS */
+#fireworks {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 1;
+}
+
+/* TE AMO */
+#teamo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: clamp(30px, 10vw, 70px);
+    font-family: monospace;
+    color: #ff3366;
+    text-shadow: 0 0 10px #ff3366, 0 0 20px #ff6699;
+    z-index: 2;
+    opacity: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Alma Laura González</h1>
+
+    <div class="heart">
+        <div></div><div class="pixel red"></div><div class="pixel red"></div><div></div><div></div><div class="pixel red"></div><div class="pixel red"></div><div></div><div></div>
+        <div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div></div>
+        <div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div></div>
+        <div></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div></div><div></div>
+        <div></div><div></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div class="pixel red"></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div class="pixel red"></div><div class="pixel red"></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div class="pixel red"></div><div></div><div></div><div></div><div></div>
+    </div>
+
+    <div id="texto"></div>
+</div>
+
+<canvas id="fireworks"></canvas>
+<div id="teamo">TE AMO</div>
+
+<script>
+const textoCompleto = `En un rincón del tiempo donde las historias aún se escriben con el pulso del destino,
+Sonny Gibran Jiménez encontró en el nombre de Alma Laura González Martínez algo más que un sonido: encontró un hogar.
+
+No fue casualidad.
+Fue de esos encuentros que parecen escritos por algo más antiguo que las estrellas.
+
+Porque cuando Alma Laura sonríe,
+el mundo deja de ser ruido y se vuelve sentido.
+
+Y cuando la miro,
+entiendo algo que nadie me enseñó:
+amar no es caer…
+es elegir quedarse.
+
+Hubo momentos donde la vida quiso escribir otra historia.
+Distancias, silencios, dudas…
+sombras que parecían tragedia.
+
+Pero aquí, algo cambió.
+
+Aquí no hubo finales impuestos.
+Aquí hubo decisiones.
+
+Yo no estoy dispuesto a perderte.
+Porque tú no eres un instante…
+eres la razón.
+
+Así, en lugar de separarnos,
+nos elegimos.
+
+Y en ese acto,
+nuestra historia dejó de ser tragedia…
+y se volvió nuestra.
+
+Hoy te lo digo claro:
+
+Alma Laura,
+no eres un capítulo.
+
+Eres toda la historia.
+
+Y si el tiempo pregunta qué es el amor…
+
+que mire este momento.
+
+Porque yo,
+Sonny Gibran Jiménez,
+
+te amo.`;
+
+// CONFIG
+const palabras = textoCompleto.split(" ");
+let i = 0;
+
+function obtenerVelocidad(palabra) {
+    if (palabra.includes("...")) return 400;
+    if (palabra.includes("\n")) return 500;
+    if (palabra.toLowerCase().includes("alma")) return 180;
+    if (palabra.toLowerCase().includes("amo")) return 220;
+    return 90;
+}
+
+function procesarPalabra(palabra) {
+    if (palabra.includes("Alma")) {
+        return `<span class="resaltado">${palabra}</span>`;
+    }
+    return palabra;
+}
+
+function escribir() {
+    if (i < palabras.length) {
+        let palabra = palabras[i];
+        document.getElementById("texto").innerHTML += procesarPalabra(palabra) + " ";
+        let velocidad = obtenerVelocidad(palabra);
+        i++;
+        setTimeout(escribir, velocidad);
+    } else {
+        iniciarFinal();
+    }
+}
+
+escribir();
+
+/* FIREWORKS */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let particles = [];
+
+function crearExplosion(x, y) {
+    for (let i = 0; i < 60; i++) {
+        particles.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 5,
+            vy: (Math.random() - 0.5) * 5,
+            life: 80
+        });
+    }
+}
+
+function animarFireworks() {
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+
+        ctx.fillStyle = "#ff3366";
+        ctx.fillRect(p.x, p.y, 3, 3);
+
+        if (p.life <= 0) particles.splice(i, 1);
+    });
+
+    requestAnimationFrame(animarFireworks);
+}
+
+function iniciarFinal() {
+    canvas.style.display = "block";
+    animarFireworks();
+
+    setInterval(() => {
+        crearExplosion(
+            Math.random() * canvas.width,
+            Math.random() * (canvas.height / 2)
+        );
+    }, 700);
+
+    const texto = document.getElementById("teamo");
+    setTimeout(() => {
+        texto.style.transition = "all 1.5s ease";
+        texto.style.opacity = 1;
+        texto.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 1000);
+}
+</script>
+
+</body>
+</html>
